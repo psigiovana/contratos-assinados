@@ -13,84 +13,76 @@ const GITHUB_REPO = process.env.GITHUB_REPO || "psigiovana/contratos-assinados";
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 if (!GITHUB_TOKEN) {
-  console.error("Falta a variável de ambiente GITHUB_TOKEN. Defina-a antes de iniciar o servidor.");
+  console.error("Falta a variável de ambiente GITHUB_TOKEN.");
   process.exit(1);
 }
 
-// CORS: permita apenas o frontend (ou "*" se preferir liberar geral)
-app.use(cors({
-  origin: FRONTEND_ORIGIN
-}));
+app.use(cors({ origin: FRONTEND_ORIGIN }));
+app.use(express.json({ limit: "30mb" }));
 
-app.use(express.json({ limit: "30mb" })); // ajuste se precisar aceitar arquivos maiores
-
-// rota de health
+// Rota de Health Check
 app.get("/health", (req, res) => res.json({ ok: true }));
 
-app.post("/upload", async (req, res) => {
+// --- BUSCAR CONTRATOS (LISTAR OU ARQUIVO ESPECÍFICO) ---
+app.get("/contratos/:nomeArquivo?", async (req, res) => {
   try {
-    const { nomeArquivo, conteudoBase64 } = req.body;
-    if (!nomeArquivo || !conteudoBase64) {
-      return res.status(400).json({ error: "nomeArquivo e conteudoBase64 são obrigatórios." });
-    }
+    const { nomeArquivo } = req.params;
+    const path = nomeArquivo ? `contratos/${nomeArquivo}` : `contratos`;
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}?ref=${GITHUB_BRANCH}`;
 
-    // checar tamanho aproximado (base64 -> bytes aproximados)
-    const approxBytes = Math.ceil(conteudoBase64.length * 3 / 4);
-    // GitHub limita arquivos a ~100 MB; deixamos margem
-    if (approxBytes > 95 * 1024 * 1024) {
-      return res.status(413).json({ error: "Arquivo muito grande para enviar ao GitHub (limite ~95MB)." });
-    }
-
-    const path = `contratos/${nomeArquivo}`;
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
-
-    // 1) checar se o arquivo já existe (para obter sha e então atualizar)
-    const getResp = await fetch(url, {
+    const resp = await fetch(url, {
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
         Accept: "application/vnd.github+json"
       }
     });
 
+    const data = await resp.json();
+    if (!resp.ok) return res.status(resp.status).json(data);
+    
+    return res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao buscar contratos" });
+  }
+});
+
+// --- UPLOAD DE CONTRATOS ---
+app.post("/upload", async (req, res) => {
+  try {
+    const { nomeArquivo, conteudoBase64 } = req.body;
+    if (!nomeArquivo || !conteudoBase64) return res.status(400).json({ error: "Dados incompletos" });
+
+    const path = `contratos/${nomeArquivo}`;
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${encodeURIComponent(path)}`;
+
+    // Verificar se existe para pegar o SHA
+    const getResp = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
     let sha;
     if (getResp.ok) {
       const getJson = await getResp.json();
-      sha = getJson.sha; // se existir, precisamos do sha para atualizar
+      sha = getJson.sha;
     }
-
-    // 2) PUT para criar/atualizar
-    const body = {
-      message: `Adicionando contrato: ${nomeArquivo}`,
-      content: conteudoBase64,
-      branch: GITHUB_BRANCH
-    };
-    if (sha) body.sha = sha;
 
     const putResp = await fetch(url, {
       method: "PUT",
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
-        Accept: "application/vnd.github+json",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify({
+        message: `Upload contrato: ${nomeArquivo}`,
+        content: conteudoBase64,
+        sha,
+        branch: GITHUB_BRANCH
+      })
     });
 
-    const putJson = await putResp.json();
-    if (!putResp.ok) {
-      console.error("GitHub API retornou erro:", putJson);
-      return res.status(500).json({ error: "Erro da GitHub API", details: putJson });
-    }
-
-    // sucesso
-    return res.json({ ok: true, resultado: putJson });
+    if (putResp.ok) return res.json({ ok: true });
+    const errData = await putResp.json();
+    res.status(500).json(errData);
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Erro interno no servidor" });
+    res.status(500).json({ error: "Erro interno" });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-  console.log(`Permitindo origem: ${FRONTEND_ORIGIN}`);
-});
+app.listen(PORT, () => console.log(`Servidor Contratos rodando na porta ${PORT}`));
