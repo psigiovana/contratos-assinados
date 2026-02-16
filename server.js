@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://psigiovana.github.io";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_REPO = process.env.GITHUB_REPO || "psigiovana/contratos-assinados";
+const GITHUB_REPO = process.env.GITHUB_REPO || "psigiovana";
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || "main";
 
 if (!GITHUB_TOKEN) {
@@ -86,3 +86,4 @@ app.post("/upload", async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Servidor Contratos rodando na porta ${PORT}`));
+
