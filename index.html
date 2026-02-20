@@ -548,7 +548,7 @@
         html += '<p><strong>Nome social:</strong> ' + d.nomeSocial + '</p>';
       }
       html += '<p><strong>CPF:</strong> ' + (d.cpf || '') + '</p>';
-      html += '<p><strong>RG:</strong> ' + (d.rg || '') + '</p>';
+      //html += '<p><strong>RG:</strong> ' + (d.rg || '') + '</p>';
       html += '<p><strong>Telefone/WhatsApp:</strong> ' + (d.telefone || '') + '</p>';
       html += '</div>';
 
@@ -652,7 +652,7 @@
         addField('Nome social: ', dados.nomeSocial);
       }
       addField('CPF: ', dados.cpf || '');
-      addField('RG: ', dados.rg || '');
+      //addField('RG: ', dados.rg || '');
       addField('Telefone/WhatsApp: ', dados.telefone || '');
 
       y += 4;
@@ -804,7 +804,7 @@
         let githubOk = false;
         try {
           const base64 = await blobParaBase64(pdfBlob);
-          const caminhoGitHub = + nomeArquivoFinal;
+          const caminhoGitHub = "/contratos" + nomeArquivoFinal;
 
           const resp = await fetch('https://contratos-assinados.onrender.com/upload', {
             method: 'POST',
@@ -836,7 +836,7 @@
         if (githubOk) {
           const item2 = document.createElement('div');
           item2.className = 'status-item status-ok';
-          item2.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg><span>Contrato salvo no Banco de Dados em <strong>contratos/' + nomeArquivoFinal + '</strong>.</span>';
+          item2.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg><span>Contrato salvo no Banco de Dados em <strong>' + nomeArquivoFinal + '</strong>.</span>';
           statusList.appendChild(item2);
         } else {
           const item2 = document.createElement('div');
