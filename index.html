@@ -212,6 +212,7 @@
       font-size: 14px;
       line-height: 1.6;
       color: #4a3f35;
+      text-align: justify;
     }
     .section-title {
       font-weight: 700;
@@ -225,6 +226,7 @@
       padding: 12px 14px;
       font-size: 13px;
       margin: 10px 0 14px;
+      text-align: left;
     }
     .patient-box p {
       margin: 2px 0;
@@ -293,6 +295,7 @@
       margin-top: 16px;
       display: grid;
       gap: 12px;
+      text-align: left;
     }
     @media (min-width: 640px) {
       .signature-row {
@@ -361,14 +364,12 @@
     }
   </style>
 
-  <!-- jsPDF via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="page">
     <header>
       <div class="header-inner">
-        
         <div class="header-text">
           <h1>Psicóloga Giovana de Morais</h1>
           <p>CRP: 08/45995 • Sistema de assinatura de contrato</p>
@@ -378,7 +379,6 @@
 
     <main>
       <div class="container">
-        <!-- Etapa 1: Formulário -->
         <div id="step-form" class="card">
           <h2 class="title">Contrato de Psicoterapia</h2>
           <p class="subtitle">Preencha seus dados para visualizar e assinar o contrato</p>
@@ -407,14 +407,9 @@
                 <input id="cpf" type="text" placeholder="000.000.000-00" required />
               </div>
               <div class="field">
-                <label>RG <span class="required">*</span></label>
-                <input id="rg" type="text" placeholder="Número do RG" required />
+                <label>Telefone / WhatsApp <span class="required">*</span></label>
+                <input id="telefone" type="text" placeholder="(00) 00000-0000" required />
               </div>
-            </div>
-
-            <div class="field">
-              <label>Telefone / WhatsApp <span class="required">*</span></label>
-              <input id="telefone" type="text" placeholder="(00) 00000-0000" required />
             </div>
 
             <button type="submit" class="btn-primary">
@@ -423,7 +418,6 @@
           </form>
         </div>
 
-        <!-- Etapa 2: Visualização -->
         <div id="step-preview" class="card" style="display:none;">
           <button type="button" class="btn-link" id="btnVoltar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -450,7 +444,6 @@
           </button>
         </div>
 
-        <!-- Etapa 3: Sucesso -->
         <div id="step-success" class="card center" style="display:none;">
           <div class="success-icon-wrap">
             <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor">
@@ -491,7 +484,6 @@
     const inputNome = document.getElementById('nome');
     const inputNomeSocial = document.getElementById('nomeSocial');
     const inputCPF = document.getElementById('cpf');
-    //const inputRG = document.getElementById('rg');
     const inputTelefone = document.getElementById('telefone');
 
     let dadosGlobais = null;
@@ -545,7 +537,6 @@
         html += '<p><strong>Nome social:</strong> ' + d.nomeSocial + '</p>';
       }
       html += '<p><strong>CPF:</strong> ' + (d.cpf || '') + '</p>';
-      //html += '<p><strong>RG:</strong> ' + (d.rg || '') + '</p>';
       html += '<p><strong>Telefone/WhatsApp:</strong> ' + (d.telefone || '') + '</p>';
       html += '</div>';
 
@@ -622,7 +613,7 @@
             doc.addPage();
             y = 20;
           }
-          doc.text(line, marginLeft, y);
+          doc.text(line, marginLeft, y, { maxWidth: maxWidth, align: 'justify' });
           y += lineHeight - 1;
         });
         y += 3;
@@ -649,7 +640,6 @@
         addField('Nome social: ', dados.nomeSocial);
       }
       addField('CPF: ', dados.cpf || '');
-      //addField('RG: ', dados.rg || '');
       addField('Telefone/WhatsApp: ', dados.telefone || '');
 
       y += 4;
@@ -741,10 +731,9 @@
       const nome = inputNome.value.trim();
       const nomeSocial = inputNomeSocial.value.trim();
       const cpf = inputCPF.value.trim();
-      //const rg = inputRG.value.trim();
       const telefone = inputTelefone.value.trim();
 
-      if (!nome || !rg || !cpf || !telefone) {
+      if (!nome || !cpf || !telefone) {
         alert('Preencha todos os campos obrigatórios.');
         return;
       }
@@ -872,14 +861,10 @@
           icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />';
 
           btnDownload.appendChild(icon);
-          const spanText = document.createElement('span');
-          //spanText.textContent = 'Baixar PDF novamente';
-          btnDownload.appendChild(spanText);
+          extraActions.appendChild(btnDownload);
 
           btnDownload.href = URL.createObjectURL(pdfBlobGlobal);
           btnDownload.download = nomeArquivoFinal || 'Contrato_Psicoterapia.pdf';
-
-          extraActions.appendChild(btnDownload);
         }
 
         const btnNovo = document.createElement('button');
