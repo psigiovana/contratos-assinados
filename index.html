@@ -410,11 +410,11 @@
                 <label>CPF <span class="required">*</span></label>
                 <input id="cpf" type="text" placeholder="000.000.000-00" required />
               </div>
-              <div class="field">
+              <!--<div class="field">
                 <label>RG <span class="required">*</span></label>
                 <input id="rg" type="text" placeholder="Número do RG" required />
-              </div>
-            </div>
+              </div> 
+            </div>-->
 
             <div class="field">
               <label>Telefone / WhatsApp <span class="required">*</span></label>
@@ -836,7 +836,7 @@
         if (githubOk) {
           const item2 = document.createElement('div');
           item2.className = 'status-item status-ok';
-          item2.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg><span>Contrato salvo no Banco de Dados em <strong>' + nomeArquivoFinal + '</strong>.</span>';
+          item2.innerHTML = '<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg><span>Contrato salvo no Banco de Dados em <strong>contratos/' + nomeArquivoFinal + '</strong>.</span>';
           statusList.appendChild(item2);
         } else {
           const item2 = document.createElement('div');
