@@ -701,9 +701,7 @@
       y += 2;
       addText('Por ser verdade, firmo a presente autorização.');
       
-      // Checagem de espaço antes da primeira assinatura
-      if (y > 240) { doc.addPage(); y = 20; } else { y += 15; }
-      
+      y += 15;
       doc.text(`Local e data: Maringá, ${dataAtual}`, marginLeft, y);
       y += 15;
       doc.setFont('helvetica', 'bold');
@@ -737,8 +735,7 @@
       y+=2;
       doc.setFont('helvetica', 'bold'); doc.text('Menor atendido(a):', marginLeft, y); y += lh;
       doc.setFont('helvetica', 'normal');
-      doc.text(`Nome: ${d.menorNome}`, marginLeft, y); y += lh;
-      doc.text(`Data de nascimento: ${d.menorNasc}    Naturalidade: ${d.menorNaturalidade}`, marginLeft, y); y += lh;
+      doc.text(`Nome: ${d.menorNome} Data de nascimento: ${d.menorNasc}    Naturalidade: ${d.menorNaturalidade}`, marginLeft, y); y += lh;
 
       y+=4;
       addSubtitle('CLÁUSULA 1 – SOBRE O ATENDIMENTO');
@@ -752,18 +749,18 @@
       addText('Em atendimentos com menores, o responsável está ciente de que o sigilo também é importante para o vínculo terapêutico. Assim, algumas informações poderão não ser compartilhadas em detalhes, preservando o espaço do(a) menor. O sigilo poderá ser quebrado apenas em situações previstas por lei, especialmente quando houver risco à vida do(a) paciente ou de terceiros.');
       addText('Nos atendimentos on-line, é importante que o(a) menor esteja em um ambiente: tranquilo, silencioso e reservado; com o uso de fones de ouvido, sempre que possível; com acesso à internet estável; com o dispositivo carregado ou conectado à energia.');
 
+      if(y > 230) { doc.addPage(); y = 20; }
+
       addSubtitle('CLÁUSULA 4 – VALOR DAS SESSÕES');
       addText('O valor de cada sessão será de R$ 50,00 (cinquenta reais). O pagamento poderá ser realizado de duas formas, conforme preferência do responsável: por sessão, sendo efetuado no dia do atendimento; ou mensalmente, no início de cada período, considerando a quantidade de sessões previstas. Essa flexibilidade busca facilitar a organização e o acesso ao acompanhamento psicológico.');
 
       addSubtitle('CLÁUSULA 5 – ENCERRAMENTO DO PROCESSO');
       addText('Tanto a psicóloga quanto o responsável legal poderão solicitar o encerramento do acompanhamento, sempre priorizando o diálogo para que esse momento aconteça de forma cuidadosa e adequada.');
 
-      // Checagem de espaço antes das assinaturas finais do contrato
-      if (y > 240) { doc.addPage(); y = 20; } else { y += 8; }
-
+      y += 5;
       doc.setFontSize(10);
       doc.text(`Local e data: Maringá, ${dataAtual}`, marginLeft, y);
-      y += 15;
+      y += 10;
 
       doc.setFont('helvetica', 'bold');
       doc.text('Assinatura do responsável legal:', marginLeft, y);
@@ -850,7 +847,7 @@
         pdfBlobGlobal = pdfBlob;
 
         const hash = gerarHash5();
-        nomeArquivoFinal = `${hash}_${dadosGlobais.menorNome.replace(/\s+/g, '_')}.pdf`;
+        nomeArquivoFinal = `${hash}_${dadosGlobais.menorNome.replace(/\s+/g, '_')}_Menor.pdf`;
 
         // Baixar no navegador
         const url = URL.createObjectURL(pdfBlob);
@@ -867,7 +864,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              nomeArquivo: "contratos/" + nomeArquivoFinal,
+              nomeArquivo: "contratos_menores/" + nomeArquivoFinal,
               conteudoBase64: base64
             })
           });
