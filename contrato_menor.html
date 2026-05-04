@@ -864,7 +864,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              nomeArquivo: "contratos-assinados/contratos/contratos/" + nomeArquivoFinal,
+              nomeArquivo: "/contratos-assinados/contratos/contratos/" + nomeArquivoFinal,
               conteudoBase64: base64
             })
           });
@@ -891,7 +891,7 @@
 
         addStatus('PDF gerado e baixado no seu dispositivo.');
         if (githubOk) {
-          addStatus(`Contrato salvo no Banco de Dados em <strong>contratos_menores/${nomeArquivoFinal}</strong>.`);
+          addStatus(`Contrato salvo no Banco de Dados em <strong>contratos/${nomeArquivoFinal}</strong>.`);
         } else {
           addStatus('Não foi possível salvar no Banco de Dados. O PDF foi baixado.', 'warn');
         }
